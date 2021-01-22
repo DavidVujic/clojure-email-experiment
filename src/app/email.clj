@@ -25,10 +25,13 @@
         content-range (-> content message-content-count range)]
     (map #(body-part content %) content-range)))
 
-(defn csv? [m]
+(defn content-type? [m type]
   (-> m
       :content-type
-      (str/includes? "text/csv")))
+      (str/includes? type)))
+
+(defn csv? [m]
+  (content-type? m "text/csv"))
 
 (defn multipart? [m]
   (str/starts-with? (message-content-type m) "multipart"))
