@@ -1,4 +1,24 @@
-Got a lot of inspiration from these resources:
+### clojure-email-experiment
+
+Experimenting with parsing an email file using Clojure. 
+
+#### Usage
+
+Example, extract an attached CSV file from an email and stringify the content:
+
+``` clojure
+
+(->> "my_email_file.eml"
+      email/->message
+      email/body
+      (filter email/csv?)
+      first
+      :body
+      email/->string)
+```
+
+#### References
+Got a lot of inspiration and ideas from these repositories:
 
 * [clojure-mail](https://github.com/owainlewis/clojure-mail)
 * [simple-email](https://github.com/kisom/simple-email)
