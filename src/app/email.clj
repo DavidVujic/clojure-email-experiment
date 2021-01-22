@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io])
   (:import [java.io FileInputStream File]
-           [javax.mail.internet MimeMessage]))
+           [javax.mail.internet MimeMessage])) ;; sub dependency of commons-email (see deps.edn)
 
 (defn message-content [msg]
   (.getContent msg))
