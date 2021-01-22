@@ -37,7 +37,7 @@
   (if (multipart? msg)
     (->> msg
          parts
-         (map #(msg->map %)))
+         (map msg->map))
     (conj () (msg->map msg))))
 
 (defn ->message [path]
