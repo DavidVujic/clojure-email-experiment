@@ -47,7 +47,7 @@
   (with-open [msg (io/input-stream path)]
     (MimeMessage. nil msg)))
 
-(defn parse [s]
+(defn ->string [s]
   (when s
     (slurp s)))
 
@@ -58,5 +58,5 @@
       (filter csv?)
       first
       :body
-      parse)
+      ->string)
   ,)
