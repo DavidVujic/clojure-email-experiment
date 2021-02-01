@@ -3,7 +3,7 @@
   (:import [javax.mail.internet MimeMessage])) ;; sub dependency of commons-email (see deps.edn)
 
 (defn message-content
-  "returns the content of a MimeMessage"
+  "Returns the content of a MimeMessage or a MimeBodyPart"
   [message]
   (.getContent message))
 
@@ -27,7 +27,7 @@
 (defn- message-parts [message]
   (if (multipart? message)
     (map message-parts (multipart->parts message))
-    message))
+    (conj () message)))
 
 (defn- msg->map [message]
   {:content-type (message-content-type message)
@@ -50,6 +50,8 @@
        stream->mime-message
        body))
 
+;; TODO: The functions below should/could be in a separate namespace
+
 (defn- content-type? [m type]
   (-> m
       :content-type
@@ -64,7 +66,7 @@
 
 (comment
   (require '[clojure.java.io :as io])
-  (->> "emails/example2.eml"
+  (->> "emails/example.eml"
        io/input-stream
        content-types))
 
