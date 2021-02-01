@@ -1,61 +1,57 @@
 (ns app.email
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io])
+  (:require [clojure.string :as str])
   (:import [javax.mail.internet MimeMessage])) ;; sub dependency of commons-email (see deps.edn)
 
-(defn message-content [msg]
-  (.getContent msg))
+(defn message-content
+  "returns the content of a MimeMessage"
+  [message]
+  (.getContent message))
 
-(defn message-content-type [msg]
-  (.getContentType msg))
+(defn- message-content-type [message]
+  (.getContentType message))
 
-(defn message-content-count [content]
+(defn- message-content-count [content]
   (.getCount content))
 
-(defn body-part [content index]
+(defn- body-part [content index]
   (.getBodyPart content index))
 
-(defn msg->map [msg]
-  {:content-type (message-content-type msg)
-   :body         (message-content msg)})
+(defn- multipart? [message]
+  (str/starts-with? (message-content-type message) "multipart/"))
 
-(defn parts [msg]
-  (let [content       (message-content msg)
+(defn- multipart->parts [message]
+  (let [content       (message-content message)
         content-range (-> content message-content-count range)]
     (map #(body-part content %) content-range)))
 
-(defn content-type? [m type]
-  (-> m
-      :content-type
-      (str/includes? type)))
+(defn- message-parts [message]
+  (if (multipart? message)
+    (map message-parts (multipart->parts message))
+    message))
 
-(defn csv? [m]
-  (content-type? m "text/csv"))
+(defn- msg->map [message]
+  {:content-type (message-content-type message)
+   :data         message})
 
-(defn multipart? [m]
-  (str/starts-with? (message-content-type m) "multipart"))
+(defn- body [message]
+  (->> message
+       message-parts
+       flatten
+       (map msg->map)))
 
-(defn body [msg]
-  (if (multipart? msg)
-    (->> msg
-         parts
-         (map msg->map))
-    (conj () (msg->map msg))))
+(defn- stream->mime-message [stream]
+  (MimeMessage. nil stream))
 
-(defn ->message [path]
-  (with-open [msg (io/input-stream path)]
-    (MimeMessage. nil msg)))
-
-(defn ->string [s]
-  (when s
-    (slurp s)))
+(defn content-types
+  "Takes an email as an input-stream and extracts content types into a seq of maps 
+   (with the keys :content-type and :data)"
+  [email-input-stream]
+  (->> email-input-stream
+       stream->mime-message
+       body))
 
 (comment
-  (->> "emails/example_with_attachment"
-      ->message
-      body
-      (filter csv?)
-      first
-      :body
-      ->string)
-  ,)
+  (require '[clojure.java.io :as io])
+  (->> "emails/example2.eml"
+       io/input-stream
+       content-types))
