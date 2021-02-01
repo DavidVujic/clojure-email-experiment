@@ -50,8 +50,29 @@
        stream->mime-message
        body))
 
+(defn- content-type? [m type]
+  (-> m
+      :content-type
+      (str/includes? type)))
+
+(defn csv? [m]
+  (content-type? m "text/csv"))
+
+(defn content [m]
+  (let [data (:data m)]
+    (when data (-> data message-content slurp))))
+
 (comment
   (require '[clojure.java.io :as io])
   (->> "emails/example2.eml"
        io/input-stream
        content-types))
+
+(comment
+  (require '[clojure.java.io :as io])
+  (->> "emails/example4.eml"
+       io/input-stream
+       content-types
+       (filter csv?)
+       first
+       content))

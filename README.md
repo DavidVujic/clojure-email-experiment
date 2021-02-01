@@ -9,12 +9,11 @@ Example, extract an attached CSV file from an email and stringify the content:
 ``` clojure
 
 (->> "my_email_file.eml"
-      email/->message
-      email/body
+      io/input-stream
+      email/content-types
       (filter email/csv?)
       first
-      :body
-      email/->string)
+      email/content)
 ```
 
 #### References
