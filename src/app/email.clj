@@ -60,9 +60,9 @@
 (defn csv? [m]
   (content-type? m "text/csv"))
 
-(defn content [m]
+(defn content-stream [m]
   (let [data (:data m)]
-    (when data (-> data message-content slurp))))
+    (when data (-> data message-content))))
 
 (comment
   (require '[clojure.java.io :as io])
@@ -72,9 +72,11 @@
 
 (comment
   (require '[clojure.java.io :as io])
-  (->> "emails/example4.eml"
-       io/input-stream
-       content-types
-       (filter csv?)
-       first
-       content))
+  (def stream (->> "emails/example4.eml"
+                   io/input-stream
+                   content-types
+                   (filter csv?)
+                   first
+                   content-stream))
+  (when stream
+    (slurp stream)))

@@ -4,7 +4,7 @@ Experimenting with parsing an email file using Clojure.
 
 #### Usage
 
-Example, extract an attached CSV file from an email and stringify the content:
+Example, extract an attached CSV file from an email and extract the content as a stream:
 
 ``` clojure
 
@@ -13,7 +13,7 @@ Example, extract an attached CSV file from an email and stringify the content:
       email/content-types
       (filter email/csv?)
       first
-      email/content)
+      email/content-stream)
 ```
 
 #### References
