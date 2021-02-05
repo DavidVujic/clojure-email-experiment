@@ -1,5 +1,8 @@
 ### clojure-email-experiment
 
+This repo has evolved into a `Clojure` library downloadable at `Clojars` and is now maintained in a different repo:
+https://github.com/DavidVujic/email-attachments
+
 Experimenting with parsing an email file using Clojure. 
 
 #### Usage
